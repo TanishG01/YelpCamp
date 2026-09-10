@@ -3,7 +3,7 @@
 
 <div class="row">
     <div class="col-6">
-
+        <div id="map" style="width: 100%; height: 300px;"></div>
         <div id="campgroundCarousel" class="carousel slide">
             <div class="carousel-inner">
                 <% campground.images.forEach((img,i)=> { %>
@@ -102,3 +102,11 @@
         <% } %>
     </div>
 </div>
+
+
+<%-"<script>"%>
+const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+const campground = <%- JSON.stringify(campground) %>;
+<%-"</script>"%>
+
+<script src="/javascripts/showPageMap.js"></script>
