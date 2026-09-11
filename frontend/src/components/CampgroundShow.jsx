@@ -16,6 +16,7 @@ const CampgroundShow = () => {
   const [error, setError] = useState(null);
   const [reviewBody, setReviewBody] = useState('');
   const [reviewRating, setReviewRating] = useState('1');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const fetchCampground = async () => {
     try {
@@ -43,6 +44,8 @@ const CampgroundShow = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmittingReview) return;
+    setIsSubmittingReview(true);
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/campgrounds/${id}/reviews`, {
         review: { body: reviewBody, rating: reviewRating }
@@ -52,6 +55,8 @@ const CampgroundShow = () => {
       setReviewRating('1');
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to submit review');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -176,7 +181,9 @@ const CampgroundShow = () => {
                     onChange={(e) => setReviewBody(e.target.value)}
                   ></textarea>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>Submit Review</button>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={isSubmittingReview}>
+                  {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                </button>
               </form>
             </div>
           </div>
