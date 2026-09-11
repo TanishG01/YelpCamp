@@ -6,19 +6,18 @@ maptilerClient.config.apiKey = process.env.MAPTILER_API_KEY;
 
 module.exports.index = async (req,res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index',{campgrounds});
+    res.json(campgrounds);
 }
 
 module.exports.renderNewForm = (req,res) => {
-    res.render('campgrounds/new');
+    res.json({ message: "New Form" });
 }
 
 module.exports.createCampground = async (req,res) => {
 
     const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
     if (!geoData.features?.length) {
-        req.flash('error', 'Could not geocode that location. Please try again and enter a valid location.');
-        return res.redirect('/campgrounds/new');
+        return res.status(400).json({ error: 'Could not geocode that location. Please try again and enter a valid location.' });
     }
 
     const campground = new Campground(req.body.campground);
@@ -29,8 +28,7 @@ module.exports.createCampground = async (req,res) => {
     campground.images = req.files.map(f =>({url: f.path, filename: f.filename}));
     campground.author = req.user._id;
     await campground.save();
-    req.flash('success','Successfully made a new campground!!');
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.status(201).json(campground);
 }
 
 module.exports.showCampground = async (req,res) => {
@@ -41,20 +39,18 @@ module.exports.showCampground = async (req,res) => {
         }
     }).populate('author');
     if(!campground){
-        req.flash('error', 'Cannot find that Campground');
-        return res.redirect('/campgrounds');
+        return res.status(404).json({ error: 'Cannot find that Campground' });
     }
-    res.render('campgrounds/show',{campground});
+    res.json(campground);
 }
 
 module.exports.renderEditForm = async (req,res) => {
     const {id} = req.params;
     const campground = await Campground.findById(id);
     if(!campground){
-        req.flash('error', 'Cannot find that Campground');
-        return res.redirect('/campgrounds');
+        return res.status(404).json({ error: 'Cannot find that Campground' });
     }
-    res.render('campgrounds/edit',{campground});
+    res.json(campground);
 }
 
 module.exports.updateCampground = async (req,res) => {
@@ -63,8 +59,7 @@ module.exports.updateCampground = async (req,res) => {
 
     const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
     if (!geoData.features?.length) {
-        req.flash('error', 'Could not geocode that location. Please try again and enter a valid location.');
-        return res.redirect(`/campgrounds/${id}/edit`);
+        return res.status(400).json({ error: 'Could not geocode that location. Please try again and enter a valid location.' });
     }
 
     const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground});
@@ -83,13 +78,11 @@ module.exports.updateCampground = async (req,res) => {
         await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}});
         // console.log(campground);
     }
-    req.flash('success', 'Successfully updated campground');
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.json(campground);
 }
 
 module.exports.deleteCampground = async (req,res) =>{
     const {id} = req.params;
     await Campground.findByIdAndDelete(id);
-    req.flash('success', 'Successfully deleted a Campground!!');
-    res.redirect('/campgrounds');
+    res.json({ message: 'Successfully deleted a Campground!!' });
 }

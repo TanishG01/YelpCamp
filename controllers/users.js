@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 module.exports.renderRegister = (req,res) =>{
-    res.render('users/register');
+    res.json({ message: "Register Form" });
 }
 
 module.exports.register = async(req,res,next) => {
@@ -11,23 +11,19 @@ module.exports.register = async(req,res,next) => {
         const registeredUser = await User.register(user,password);
         req.login(registeredUser, err => {
             if(err) return next(err);
-            req.flash('success', 'Welcome to Yelp Camp!!');
-            res.redirect('/campgrounds');
+            res.status(201).json({ user: registeredUser, message: 'Welcome to Yelp Camp!!' });
         })
     } catch(e){
-        req.flash('error', e.message);
-        res.redirect('register');
+        res.status(400).json({ error: e.message });
     }
 }
 
 module.exports.renderLogin = (req,res) => {
-    res.render('users/login');
+    res.json({ message: "Login Form" });
 }
 
 module.exports.login = (req,res) => {
-    req.flash('success', 'welcome back!!');
-    const redirectUrl = res.locals.returnTo || '/campgrounds';
-    res.redirect(redirectUrl);
+    res.json({ message: 'welcome back!!', user: req.user });
 }
 
 module.exports.logout = (req, res, next) => {
@@ -35,7 +31,6 @@ module.exports.logout = (req, res, next) => {
         if (err) {
             return next(err);
         }
-        req.flash('success', 'Goodbye!');
-        res.redirect('/');
+        res.json({ message: 'Goodbye!' });
     });
 }
