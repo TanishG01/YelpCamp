@@ -1,9 +1,14 @@
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
+
 const mongoose = require('mongoose');
 const cities = require('./cities');
 const {places,descriptors} = require('./seedHelpers');
 const Campground = require('../models/campground');
 
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/yelp-camp';
+// console.log(dbUrl);
 mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
@@ -41,8 +46,8 @@ const seedDB = async() => {
                 filename: 'YelpCamp/uyxabcb64cfjrwxigbm1'
                 },
                 {
-                url: 'https://res.cloudinary.com/dyplv7xe5/image/upload/v1788954222/YelpCamp/t8qjhlusgodoohijimul.jpg',
-                filename: 'YelpCamp/t8qjhlusgodoohijimul'
+                url: 'https://res.cloudinary.com/dyplv7xe5/image/upload/v1789040184/YelpCamp/tuyxawot8iqu15a9xcbc.jpg',
+                filename: 'YelpCamp/tuyxawot8iqu15a9xcbc'
                 }
             ]
         })
