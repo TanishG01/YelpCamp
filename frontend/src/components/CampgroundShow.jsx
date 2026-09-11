@@ -151,20 +151,19 @@ const CampgroundShow = () => {
             <div className="card-body">
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-color)' }}>Leave a Review</h3>
               <form onSubmit={handleReviewSubmit}>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="rating">Rating</label>
-                  <input 
-                    type="range" 
-                    id="rating" 
-                    name="rating" 
-                    min="1" max="5" 
-                    className="form-control" 
-                    style={{ padding: '0' }}
-                    value={reviewRating}
-                    onChange={(e) => setReviewRating(e.target.value)}
-                  />
-                  <div style={{ textAlign: 'center', fontWeight: 'bold', marginTop: '0.5rem', color: 'var(--success-color)' }}>{reviewRating} / 5</div>
-                </div>
+                <fieldset className="starability-basic" style={{ marginBottom: '1rem' }}>
+                  <input type="radio" id="no-rate" className="input-no-rate" name="rating" value="1" defaultChecked aria-label="No rating." onChange={(e) => setReviewRating(e.target.value)} />
+                  <input type="radio" id="first-rate1" name="rating" value="1" onChange={(e) => setReviewRating(e.target.value)} />
+                  <label htmlFor="first-rate1" title="Terrible">1 star</label>
+                  <input type="radio" id="first-rate2" name="rating" value="2" onChange={(e) => setReviewRating(e.target.value)} />
+                  <label htmlFor="first-rate2" title="Not good">2 stars</label>
+                  <input type="radio" id="first-rate3" name="rating" value="3" onChange={(e) => setReviewRating(e.target.value)} />
+                  <label htmlFor="first-rate3" title="Average">3 stars</label>
+                  <input type="radio" id="first-rate4" name="rating" value="4" onChange={(e) => setReviewRating(e.target.value)} />
+                  <label htmlFor="first-rate4" title="Very good">4 stars</label>
+                  <input type="radio" id="first-rate5" name="rating" value="5" onChange={(e) => setReviewRating(e.target.value)} />
+                  <label htmlFor="first-rate5" title="Amazing">5 stars</label>
+                </fieldset>
                 <div className="form-group">
                   <label className="form-label" htmlFor="body">Review</label>
                   <textarea 
@@ -195,7 +194,9 @@ const CampgroundShow = () => {
                     <h5 style={{ color: 'var(--accent-color)', fontWeight: 'bold', marginBottom: '0.5rem' }}>
                       {review.author?.username || 'Unknown'}
                     </h5>
-                    <p style={{ color: 'var(--success-color)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Rating: {review.rating}/5</p>
+                    <p className="starability-result" data-rating={review.rating} style={{ marginBottom: '0.5rem' }}>
+                      Rated: {review.rating} stars
+                    </p>
                     <p>{review.body}</p>
                     {currentUser && review.author && currentUser._id === review.author._id && (
                       <button 
