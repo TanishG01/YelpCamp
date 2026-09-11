@@ -17,17 +17,18 @@ const CampgroundShow = () => {
   const [reviewBody, setReviewBody] = useState('');
   const [reviewRating, setReviewRating] = useState('1');
 
+  const fetchCampground = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/campgrounds/${id}`);
+      setCampground(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to load campground details.');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCampground = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/campgrounds/${id}`);
-        setCampground(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load campground details.');
-        setLoading(false);
-      }
-    };
     fetchCampground();
   }, [id]);
 
@@ -43,10 +44,10 @@ const CampgroundShow = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/campgrounds/${id}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/campgrounds/${id}/reviews`, {
         review: { body: reviewBody, rating: reviewRating }
       }, { withCredentials: true });
-      setCampground(res.data);
+      await fetchCampground();
       setReviewBody('');
       setReviewRating('1');
     } catch (err) {
@@ -56,8 +57,8 @@ const CampgroundShow = () => {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      const res = await axios.delete(`${import.meta.env.VITE_API_URL}/campgrounds/${id}/reviews/${reviewId}`, { withCredentials: true });
-      setCampground(res.data);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/campgrounds/${id}/reviews/${reviewId}`, { withCredentials: true });
+      await fetchCampground();
     } catch (err) {
       alert('Failed to delete review');
     }
